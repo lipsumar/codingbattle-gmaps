@@ -1,6 +1,7 @@
 var Backbone = require('backbone'),
 	$ = require('jquery');
 var CONFIG = require('./config');
+var fncs = require('./functions');
 
 
 
@@ -54,16 +55,130 @@ var App = Backbone.View.extend({
 		var self = this;
 		this.displayMap();
 
+		var directionsService = new google.maps.DirectionsService();
+		var directionsDisplay = new google.maps.DirectionsRenderer();
+		directionsDisplay.setMap(this.map);
+
 		this.addUserMarker(this.userPosition);
 
-		//var closestDefeb = getClosestDefeb(this.defebrilators);
-		var closestDefeb = this.defebrilators[0];
+		var closestDefeb = fncs.findNearestDefribilator(this.userPosition.coords.latitude,this.userPosition.coords.longitude, this.defebrilators);
+		//var closestDefeb = this.defebrilators[0];
 
 		this.addDefibMarker(closestDefeb, './img/pictogram-din-e017-defibrillator.png');
 
 		this.defebrilators.forEach(function(defib){
 			self.addDefibMarker(defib, './img/pictogram-din-e017-defibrillator_bleh.png');
 		});
+
+
+		var request = {
+			origin: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			destination:{
+				lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
+				lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
+			},
+			travelMode: google.maps.TravelMode.DRIVING
+		};
+
+		directionsService.route(request, function(result, status) {
+			var timeStr;
+			if (status == google.maps.DirectionsStatus.OK) {
+				directionsDisplay.setDirections(result);
+				try{
+					timeStr = result.routes[0].legs[0].duration.text;
+				}catch(err){
+					timeStr = '¯\_(ツ)_/¯';
+				}
+				$('#text').html('driving: '+timeStr+'<br>');
+			}
+		});
+
+
+
+
+		var request = {
+			origin: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			destination:{
+				lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
+				lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
+			},
+			travelMode: google.maps.TravelMode.WALKING
+		};
+
+		directionsService.route(request, function(result, status) {
+			var timeStr;
+			if (status == google.maps.DirectionsStatus.OK) {
+
+				try{
+					timeStr = result.routes[0].legs[0].duration.text;
+				}catch(err){
+					timeStr = '¯\_(ツ)_/¯';
+				}
+				$('#text').append('walking: '+timeStr+'<br>');
+			}
+		});
+
+
+
+
+		var request = {
+			origin: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			destination:{
+				lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
+				lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
+			},
+			travelMode: google.maps.TravelMode.BICYCLING
+		};
+
+		directionsService.route(request, function(result, status) {
+			var timeStr;
+			if (status == google.maps.DirectionsStatus.OK) {
+
+				try{
+					timeStr = result.routes[0].legs[0].duration.text;
+				}catch(err){
+					timeStr = '¯\_(ツ)_/¯';
+				}
+				$('#text').append('BICYCLING:'+timeStr+'<br>');
+			}
+		});
+
+
+		var request = {
+			origin: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			destination:{
+				lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
+				lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
+			},
+			travelMode: google.maps.TravelMode.TRANSIT
+		};
+
+		directionsService.route(request, function(result, status) {
+			var timeStr;
+			if (status == google.maps.DirectionsStatus.OK) {
+
+				try{
+					timeStr = result.routes[0].legs[0].duration.text;
+				}catch(err){
+					timeStr = '¯\_(ツ)_/¯';
+				}
+				$('#text').append('TRANSIT:'+timeStr);
+			}
+		});
+
+
 
 	},
 
