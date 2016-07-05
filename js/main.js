@@ -4,20 +4,13 @@ var CONFIG = require('./config');
 
 
 
-var App = function(){
-	alert('why hello!');
-	this.config = CONFIG;
-	this.loadGoogleMaps();
-
-
-}
-
 
 var App = Backbone.View.extend({
 	initialize: function(){
 		$.when(
 			this.loadGoogleMaps(),
-			this.loadDefebrilators()
+			this.loadDefebrilators(),
+			this.askForUserLocation()
 		).then(this.start.bind(this));
 
 
@@ -37,7 +30,7 @@ var App = Backbone.View.extend({
 	loadDefebrilators: function(){
 		var self = this;
 		var promise = $.Deferred();
-		$.getJSON('./defebrilators-test.json', function(resp){
+		$.getJSON('./Defibrillators.json', function(resp){
 			console.log(arguments);
 			self.defebrilators = resp;
 			promise.resolve();
@@ -45,13 +38,61 @@ var App = Backbone.View.extend({
 		return promise;
 	},
 
+	askForUserLocation: function(){
+		var self = this;
+		var promise = $.Deferred();
+		navigator.geolocation.getCurrentPosition(function(pos){
+			console.log(pos);
+			self.userPosition = pos;
+			promise.resolve();
+		});
+		return promise;
+	},
+
 
 	start: function(){
-		console.log('ready!', this.defebrilators);
+		this.displayMap();
+
+		// add current pos point
+		var marker = new google.maps.Marker({
+			position: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			map: this.map,
+			title: 'You are dying here'
+		});
+
+
+		//var closestDefeb = getClosestDefeb(this.defebrilators);
+		var closestDefeb = this.defebrilators[0];
+
+		if(closestDefeb){
+			// add current pos point
+			var marker = new google.maps.Marker({
+				position: {
+					lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
+					lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
+				},
+				map: this.map,
+				title: 'Get here or die'
+			});
+		}
+
+	},
+
+	displayMap: function(){
+		this.map = new google.maps.Map(document.getElementById('map'), {
+			center: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			zoom: 14
+		});
 	}
 });
 
-https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap
+
 
 
 
