@@ -26,16 +26,28 @@ var App = Backbone.View.extend({
 
 
 	loadGoogleMaps: function(){
-		return $.getScript('https://maps.googleapis.com/maps/api/js?key='+CONFIG['gmap-ai-key']+'&callback=initMap');
+		var promise = $.Deferred();
+		window.gmap_initMap = function(){
+			promise.resolve();
+		}
+		$.getScript('https://maps.googleapis.com/maps/api/js?key='+CONFIG['gmap-ai-key']+'&callback=gmap_initMap')
+		return promise;
 	},
 
 	loadDefebrilators: function(){
-		return $.getJSON('./defebrilators-test.json');
+		var self = this;
+		var promise = $.Deferred();
+		$.getJSON('./defebrilators-test.json', function(resp){
+			console.log(arguments);
+			self.defebrilators = resp;
+			promise.resolve();
+		});
+		return promise;
 	},
 
 
 	start: function(){
-		console.log('ready!');
+		console.log('ready!', this.defebrilators);
 	}
 });
 
