@@ -1,9 +1,20 @@
 var assert = require('chai').assert;
-describe('Array', function() {
-  describe('#indexOf()', function() {
-    it('should return -1 when the value is not present', function() {
-      assert.equal(-1, [1,2,3].indexOf(5));
-      assert.equal(-1, [1,2,3].indexOf(0));
+var expect = require('expect.js');
+
+var fs = require('../js/functions.js');
+
+
+
+
+describe('Functions', function() {
+  describe('#findNearestDefribilator()', function() {
+    it('should return HACKLEAGUE wth simple json ', function() {
+        var jsonDefibrillators = require('./lightDefebrilators.json');
+        var curLat = 50.855257;
+        var curLong = 4.341371;
+     var findDefibrillator = fs.findNearestDefribilator(curLat, curLong, jsonDefibrillators)
+     expect(findDefibrillator).to.not.be(undefined);
+        expect(findDefibrillator.Nom).to.contain('HACKLEAGUE');
     });
   });
 });
