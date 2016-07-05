@@ -17,5 +17,8 @@
     "browserify": "^13.0.1",
     "express": "^4.14.0",
     "jquery": "^3.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0"
   }
 }
