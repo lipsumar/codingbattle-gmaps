@@ -17,7 +17,8 @@ var App = Backbone.View.extend({
 	initialize: function(){
 		$.when(
 			this.loadGoogleMaps(),
-			this.loadDefebrilators()
+			this.loadDefebrilators(),
+			this.askForUserLocation()
 		).then(this.start.bind(this));
 
 
@@ -45,13 +46,46 @@ var App = Backbone.View.extend({
 		return promise;
 	},
 
+	askForUserLocation: function(){
+		var self = this;
+		var promise = $.Deferred();
+		navigator.geolocation.getCurrentPosition(function(pos){
+			console.log(pos);
+			self.userPosition = pos;
+			promise.resolve();
+		});
+		return promise;
+	},
+
 
 	start: function(){
-		console.log('ready!', this.defebrilators);
+		this.displayMap();
+
+		// add current pos point
+		var marker = new google.maps.Marker({
+			position: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			map: this.map,
+			title: 'You are here'
+		});
+
+	},
+
+	displayMap: function(){
+		this.map = new google.maps.Map(document.getElementById('map'), {
+			center: {
+				lat: this.userPosition.coords.latitude,
+				lng: this.userPosition.coords.longitude
+			},
+			zoom: 4
+		});
+
 	}
 });
 
-https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap
+
 
 
 
