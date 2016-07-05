@@ -51,34 +51,46 @@ var App = Backbone.View.extend({
 
 
 	start: function(){
+		var self = this;
 		this.displayMap();
 
-		// add current pos point
-		var marker = new google.maps.Marker({
-			position: {
-				lat: this.userPosition.coords.latitude,
-				lng: this.userPosition.coords.longitude
-			},
-			map: this.map,
-			title: 'You are dying here'
-		});
-
+		this.addUserMarker(this.userPosition);
 
 		//var closestDefeb = getClosestDefeb(this.defebrilators);
 		var closestDefeb = this.defebrilators[0];
 
-		if(closestDefeb){
-			// add current pos point
-			var marker = new google.maps.Marker({
-				position: {
-					lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
-					lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
-				},
-				map: this.map,
-				title: 'Get here or die'
-			});
-		}
+		this.addDefibMarker(closestDefeb, './img/pictogram-din-e017-defibrillator.png');
 
+		this.defebrilators.forEach(function(defib){
+			self.addDefibMarker(defib, './img/pictogram-din-e017-defibrillator_bleh.png');
+		});
+
+	},
+
+	addDefibMarker: function(defib, icon){
+		// add current pos point
+		var marker = new google.maps.Marker({
+			position: {
+				lat: parseFloat(defib.Latitude.split(',').join('.')),
+				lng: parseFloat(defib.Longitude.split(',').join('.'))
+			},
+			map: this.map,
+			title: 'Get here or die',
+			icon: icon
+		});
+	},
+
+	addUserMarker: function(pos){
+
+		// add current pos point
+		var marker = new google.maps.Marker({
+			position: {
+				lat: pos.coords.latitude,
+				lng: pos.coords.longitude
+			},
+			map: this.map,
+			title: 'You are dying here'
+		});
 	},
 
 	displayMap: function(){
