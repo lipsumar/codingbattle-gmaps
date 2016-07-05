@@ -4,14 +4,6 @@ var CONFIG = require('./config');
 
 
 
-var App = function(){
-	alert('why hello!');
-	this.config = CONFIG;
-	this.loadGoogleMaps();
-
-
-}
-
 
 var App = Backbone.View.extend({
 	initialize: function(){
@@ -38,7 +30,7 @@ var App = Backbone.View.extend({
 	loadDefebrilators: function(){
 		var self = this;
 		var promise = $.Deferred();
-		$.getJSON('./defebrilators-test.json', function(resp){
+		$.getJSON('./Defibrillators.json', function(resp){
 			console.log(arguments);
 			self.defebrilators = resp;
 			promise.resolve();
@@ -68,8 +60,24 @@ var App = Backbone.View.extend({
 				lng: this.userPosition.coords.longitude
 			},
 			map: this.map,
-			title: 'You are here'
+			title: 'You are dying here'
 		});
+
+
+		//var closestDefeb = getClosestDefeb(this.defebrilators);
+		var closestDefeb = this.defebrilators[0];
+
+		if(closestDefeb){
+			// add current pos point
+			var marker = new google.maps.Marker({
+				position: {
+					lat: parseFloat(closestDefeb.Latitude.split(',').join('.')),
+					lng: parseFloat(closestDefeb.Longitude.split(',').join('.'))
+				},
+				map: this.map,
+				title: 'Get here or die'
+			});
+		}
 
 	},
 
@@ -79,9 +87,8 @@ var App = Backbone.View.extend({
 				lat: this.userPosition.coords.latitude,
 				lng: this.userPosition.coords.longitude
 			},
-			zoom: 4
+			zoom: 14
 		});
-
 	}
 });
 
