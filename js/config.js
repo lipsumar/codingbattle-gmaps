@@ -1,3 +1,3 @@
 module.exports = {
-	"gmap-ai-key": "foo"
+	"gmap-ai-key": "AIzaSyCfJUgIUGUFsOigM44NowzWZnFIpHbFMR8"
 };
